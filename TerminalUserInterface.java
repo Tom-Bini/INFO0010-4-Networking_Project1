@@ -15,7 +15,9 @@ public class TerminalUserInterface implements UserInterface{
         return Action.BANK;
     }
 
-    public void showCards(List<Card> player_cards, List<Card> dealer_cards) {
+    public void showCards(Hand player_cards, Hand dealer_cards) {
+        String str_player_cards = "";
+        String str_dealer_cards = "";
         System.out.println("");
     }
 

@@ -17,15 +17,15 @@ public class Card {
         this.suit = suit;
     }
 
-    public int getRank() { return this.rank; }
+    public Character getRank() { return this.rank; }
 
-    public int getSuit() { return this.suit; }
+    public Character getSuit() { return this.suit; }
 
     public int getValue(int current_score){
         if (Character.isDigit(this.rank)) {
             int value = Character.getNumericValue(this.rank);
             return value;
-        } else if (accepted_ranks.subList(8, 11).contains(this.rank)) {
+        } else if (this.rank == 'T' || this.rank == 'J' || this.rank == 'Q' || this.rank == 'K') {
             return 10;
         } else if (current_score <= 11) {
             return 10;
@@ -34,5 +34,9 @@ public class Card {
         } else {
             throw new IllegalStateException("State not handled : " + this.rank + this.suit + " current score : " + current_score);
         }
+    }
+
+    public String toString() {
+        return Character.toString(getRank()) + Character.toString(getSuit());
     }
 }

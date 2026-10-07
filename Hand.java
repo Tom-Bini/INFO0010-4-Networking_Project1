@@ -25,4 +25,17 @@ public class Hand {
         this.hand.add(card);
         this.status.add(status);
     }
+
+    public String toString() {
+        String str = "";
+        for(int i = 0; i < hand.size(); i++) {
+            if (status[i] = true) {
+                
+            } else {
+                str += " ??"
+            }
+
+        }
+        return str;
+    }
 }

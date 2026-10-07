@@ -2,7 +2,7 @@ import java.net.ServerSocket;
 
 public class BlackjackClient {
 
-    public ServerSocket serverSocket;
+    public ServerSocket server_socket;
 
     BlackjackClient() {
         System.out.println("BlackjackClient up");
