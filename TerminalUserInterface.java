@@ -31,14 +31,10 @@ public class TerminalUserInterface implements UserInterface{
             int actionChosen = scanner.nextInt();
             
             switch (actionChosen) {
-
                 case 1: return Action.BET;
-
                 case 2: return Action.BANK;
-
                 case 3: return Action.QUIT;
-
-                default:
+                default: System.out.println("Invalid number, try again.");
                     break;
             }
         }
@@ -55,17 +51,11 @@ public class TerminalUserInterface implements UserInterface{
             int actionChosen = scanner.nextInt();
             
             switch (actionChosen) {
-
                 case 1: return Action.HIT;
-
                 case 2: return Action.STAND;
-
                 case 3: return Action.BANK;
-
                 case 4: return Action.QUIT;
-
-                default:
-                    System.out.println("Invalid number, try again.");
+                default: System.out.println("Invalid number, try again.");
                     break;
             }
         }
