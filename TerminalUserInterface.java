@@ -2,8 +2,11 @@ import java.util.Scanner;
 import java.util.List;
 
 public class TerminalUserInterface implements UserInterface{
+    
+    Scanner scanner;
+
     TerminalUserInterface() {
-        Scanner scanner = new Scanner(System.in);
+        this.scanner = new Scanner(System.in);
     }
 
     @Override
@@ -13,6 +16,10 @@ public class TerminalUserInterface implements UserInterface{
     }
 
     public void showCards(List<Card> player_cards, List<Card> dealer_cards) {
-        System.out.println("")
+        System.out.println("");
+    }
+
+    public void closeScanner() {
+        this.scanner.close();
     }
 }
