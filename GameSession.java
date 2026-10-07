@@ -14,10 +14,16 @@ public class GameSession {
     }
 
     public void startRound(int bet) {
-        int playerScore = 0;
-        int dealerScore = 0;
+        int player_score = 0;
+        int dealer_score = 0;
         if(bet > 0 && bet <= this.bank) {
-            while(playerScore <= 21) {
+            //Start of the player's turn
+            while(player_score <= 21) {
+
+            }
+
+            //Start of the dealer's turn
+            while(dealer_score <= 16) {//vérif
 
             }
         }
