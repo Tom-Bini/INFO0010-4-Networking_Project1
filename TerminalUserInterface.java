@@ -8,12 +8,7 @@ public class TerminalUserInterface implements UserInterface{
         this.scanner = new Scanner(System.in);
     }
 
-    @Override
-    public Action getNextAction() {
-        
-        return Action.BANK;
-    }
-
+    @Override 
     public void showCards(Hand player_cards, Hand dealer_cards) {
         String str_player_cards = player_cards.toString();
         String str_dealer_cards = dealer_cards.toString();
@@ -21,6 +16,7 @@ public class TerminalUserInterface implements UserInterface{
         System.out.println("Dealer's cards :" + str_dealer_cards);
     }
 
+    @Override 
     public Action showActionsBetweenRounds() {
         while(true) {
             System.out.println("1 : BET");
@@ -40,6 +36,7 @@ public class TerminalUserInterface implements UserInterface{
         }
     }
 
+    @Override 
     public Action showActionsDuringRound() {
         while(true) {
             System.out.println("1 : HIT");
@@ -61,7 +58,27 @@ public class TerminalUserInterface implements UserInterface{
         }
     }
 
-    public void closeScanner() {
+    @Override
+    public void showGameResultWin(int earnings, int new_bank_value) {
+        System.out.println("You Won " + earnings + "chips !");
+        System.out.println("Your updated bank value : " + new_bank_value);
+    }
+
+    @Override
+    public void showGameResultTie(int earnings, int new_bank_value) {
+        System.out.println("It's a push !");
+        System.out.println("Your bank value didn't change : " + new_bank_value);
+    }
+
+    @Override
+    public void showGameResultLose(int bet, int new_bank_value) {
+        System.out.println("You Lost " + bet + "chips !");
+        System.out.println("Your updated bank value : " + new_bank_value);
+    }
+
+    @Override 
+    public void showGoodbyeMessage() {
+        System.out.println("Thanks for playing ! Have a nice day.");
         this.scanner.close();
     }
 }
