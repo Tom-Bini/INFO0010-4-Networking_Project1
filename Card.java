@@ -17,13 +17,9 @@ public class Card {
         this.suit = suit;
     }
 
-    public int getRank() {
-        return this.rank;
-    }
+    public int getRank() { return this.rank; }
 
-    public int getSuit() {
-        return this.suit;
-    }
+    public int getSuit() { return this.suit; }
 
     public int getValue(int current_score){
         if (Character.isDigit(this.rank)) {
