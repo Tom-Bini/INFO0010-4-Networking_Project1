@@ -29,10 +29,10 @@ public class Hand {
     public String toString() {
         String str = "";
         for(int i = 0; i < hand.size(); i++) {
-            if (status[i] = true) {
-                
+            if (status.get(i) == true) {
+                str += " " + hand.get(i).toString();
             } else {
-                str += " ??"
+                str += " ??";
             }
 
         }
