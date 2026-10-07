@@ -30,7 +30,7 @@ public class Deck {
 
     public boolean isFull() { return (this.deck.size() == deck_size); }
 
-    public void Shuffle() {
+    public void shuffle() {
         List<Card> temp = new ArrayList<Card>();
 
         Collections.shuffle(temp);
@@ -42,7 +42,7 @@ public class Deck {
         }
     }
 
-    public Card Hit() {
+    public Card hit() {
         if (!deck.isEmpty()) {
             Card hit = deck.pop();
             discard_pile.push(hit);
