@@ -13,7 +13,9 @@ public class TerminalUserInterface implements UserInterface{
         String str_player_cards = player_cards.toString();
         String str_dealer_cards = dealer_cards.toString();
         System.out.println("Your cards :" + str_player_cards);
+        System.out.println("Your score :" + player_cards.getValue());
         System.out.println("Dealer's cards :" + str_dealer_cards);
+        System.out.println("Dealer's score :" + dealer_cards.getValue());
     }
 
     @Override 
@@ -36,6 +38,11 @@ public class TerminalUserInterface implements UserInterface{
         }
     }
 
+    @Override
+    public void showBankValue(int bank) {
+        System.out.println("Bank : " + bank + " chips");
+    }
+
     @Override 
     public Action showActionsDuringRound() {
         while(true) {
@@ -56,6 +63,17 @@ public class TerminalUserInterface implements UserInterface{
                     break;
             }
         }
+    }
+
+    @Override 
+    public int askBetSize() {
+        System.out.println("How many chips do you want to bet ?");
+        return scanner.nextInt();
+    }
+
+    @Override 
+    public void showErrorMsg() {
+        System.out.println("Value not accepted, try again.");
     }
 
     @Override

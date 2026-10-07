@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.ArrayList;
 
 public class Hand {
 
@@ -6,7 +7,8 @@ public class Hand {
     List<Boolean> status; // False == hidden, True == revealed
 
     Hand() {
-
+        hand = new ArrayList<Card>();
+        status = new ArrayList<Boolean>();
     }
 
     Hand(List<Card> cards) {
@@ -26,9 +28,27 @@ public class Hand {
         this.status.add(status);
     }
 
+    public int getValue() {
+
+        int hand_value = 0;
+        int i = 0;
+
+        for(Card card : hand) {
+
+            if(status.get(i) == true) {
+                hand_value += card.getValue(hand_value);
+            }
+
+            i++;
+        }
+
+        return hand_value;
+    }
+
     public String toString() {
         String str = "";
         for(int i = 0; i < hand.size(); i++) {
+
             if (status.get(i) == true) {
                 str += " " + hand.get(i).toString();
             } else {

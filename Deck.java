@@ -42,11 +42,11 @@ public class Deck {
         }
     }
 
-    public Card hit(Hand hand) {
+    public Card hit(Hand hand, Boolean status_card) {
         if (!deck.isEmpty()) {
             Card hit = deck.pop();
             discard_pile.push(hit);
-            hand.addCard(hit, null);
+            hand.addCard(hit, status_card);
             return hit;
         } else {
             System.out.println("Stack is empty! Cannot pop.");
