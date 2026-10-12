@@ -45,6 +45,11 @@ public class Hand {
         return hand_value;
     }
 
+    public Card reveal(int index) {
+        status.set(index, true);
+        return hand.get(index);
+    }
+
     public String toString() {
         String str = "";
         for(int i = 0; i < hand.size(); i++) {

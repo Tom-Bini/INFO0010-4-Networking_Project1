@@ -16,10 +16,13 @@ public class GameSession {
         
     }
 
-    public void play() {
-        while (true) {
+    public Boolean play() { // Return true when we need to urge quit
+        while (bank > 0 && deck.getSize() >= 4) {
+
+            int bet;
+
             while (true) {
-                int bet = tui.askBetSize();
+                bet = tui.askBetSize();
                 if (bet <= this.bank) {
                     break;
                 } else {
@@ -27,23 +30,71 @@ public class GameSession {
                 }
             }
 
+            bank -= bet;
+
+            Result result = startRound(bet);
+            switch (result) {
+
+                case NATURAL_BLACKJACK:
+                    bank += bet * 5 / 2;
+                    break;
+
+                case WIN:
+                    bank += bet * 2;
+                    break;
+
+                case TIE:
+                    bank += bet;
+                    break;
+
+                case LOSE:
+                    break;
+
+                case QUIT:
+                    return true;
+
+                case ERROR:
+                    break;
+            
+                default:
+                    break;
+            }
+        }
+        return;
+    }
+
+    public Result startRound(int bet) {
+        if(bet > 0 && bet <= this.bank) {
+
             this.deck.hit(player_hand, true);
             this.deck.hit(player_hand, true);
             this.deck.hit(dealer_hand, true);
             this.deck.hit(dealer_hand, false);
 
+            if(player_hand.getValue() == 21) {
+                return Result.NATURAL_BLACKJACK;
+            }
+
             tui.showCards(player_hand, dealer_hand);
 
-            while (player_hand.getValue() >= 21) {
+            Boolean endPlayerTurn = false;
+
+            // Player's turn
+
+            while (endPlayerTurn == false) {
             
                 Action action = tui.showActionsDuringRound();
 
                 switch (action) {
                     case HIT:
                         this.deck.hit(player_hand, true);
+                        if(this.deck.isEmpty() == true) {
+                            endPlayerTurn = true;
+                        }
                         break;
 
                     case STAND:
+                        endPlayerTurn = true;
                         break;
 
                     case BANK: 
@@ -51,44 +102,38 @@ public class GameSession {
                         break;
 
                     case QUIT:
-                    
-                        break;
+                        return Result.QUIT;
                 
-                    default:
-                        break;
+                    default:break;
                 }
 
                 tui.showCards(player_hand, dealer_hand);
+
+                if(player_hand.getValue() > 21) {
+                    return Result.LOSE;
+                } else if (player_hand.getValue() == 21) {
+                    break;
+                }
             }
+
+            //Dealer's turn
+
+            dealer_hand.reveal(1);
+
+            while (dealer_hand.getValue() <= 16 && this.deck.isEmpty() == false) {
+                this.deck.hit(dealer_hand, true);
+            }
+
+            if (player_hand.getValue() > dealer_hand.getValue()) {
+                return Result.WIN;
+            } else if (player_hand.getValue() == dealer_hand.getValue()) {
+                return Result.TIE;
+            } else {
+                return Result.LOSE;
+            }
+        } else {
+            System.out.println("Bet impossible.");
+            return Result.ERROR;
         }
     }
-
-    public void startRound(int bet) {
-        int player_score = 0;
-        int dealer_score = 0;
-        if(bet > 0 && bet <= this.bank) {
-            //Start of the player's turn
-            while(player_score <= 21) {
-
-            }
-
-            //Start of the dealer's turn
-            while(dealer_score <= 16) {//vérif
-
-            }
-        }
-    }
-
-    public Card playerHit() { return this.deck.hit(player_hand); }
-    public Card dealerHit() { return this.deck.hit(dealer_hand); }
-
-    public void stand() {
-
-    }
-
-    public int bank() {
-        return bank;
-    }
-
-
 }
