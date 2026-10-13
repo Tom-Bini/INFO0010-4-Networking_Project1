@@ -1,12 +1,19 @@
-import java.net.ServerSocket;
+import java.io.*;
+import java.net.*;
 
 public class BlackjackServer {
 
     private ServerSocket server_socket;
-    private GameSession game_session;
-    private TerminalUserInterface cli;
+    private Socket transmission_socket;
+    private OutputStream out;
+    private InputStream in;
 
-    BlackjackServer() {
+    BlackjackServer() throws Exception {
+        server_socket = new ServerSocket(2027);
+        transmission_socket = server_socket.accept();
+        out = transmission_socket.getOutputStream();
+        in = transmission_socket.getInputStream();
+
         System.out.println("BlackjackServer up");
     }
     
