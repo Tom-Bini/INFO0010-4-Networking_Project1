@@ -21,21 +21,6 @@ public class Card {
 
     public Character getSuit() { return this.suit; }
 
-    public int getValue(int current_score){
-        if (Character.isDigit(this.rank)) {
-            int value = Character.getNumericValue(this.rank);
-            return value;
-        } else if (this.rank == 'T' || this.rank == 'J' || this.rank == 'Q' || this.rank == 'K') {
-            return 10;
-        } else if (current_score <= 11) {
-            return 10;
-        } else if (current_score > 11) {
-            return 1;
-        } else {
-            throw new IllegalStateException("State not handled : " + this.rank + this.suit + " current score : " + current_score);
-        }
-    }
-
     public String toString() {
         return Character.toString(getRank()) + Character.toString(getSuit());
     }
