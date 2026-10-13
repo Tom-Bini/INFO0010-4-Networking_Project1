@@ -72,7 +72,8 @@ public class Hand {
         status.set(index, true);
         return hand.get(index);
     }
-
+    
+    @Override 
     public String toString() {
         String str = "";
         for(int i = 0; i < hand.size(); i++) {
