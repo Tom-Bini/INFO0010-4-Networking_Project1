@@ -28,21 +28,44 @@ public class Hand {
         this.status.add(status);
     }
 
-    public int getValue() {
-
-        int hand_value = 0;
-        int i = 0;
-
-        for(Card card : hand) {
-
-            if(status.get(i) == true) {
-                hand_value += card.getValue(hand_value);
+    public Boolean allCardsVisibles() {
+        for (Boolean bool : this.status) {
+            if(bool == false) {
+                return false;
             }
+        }
+        return true;
+    }
 
-            i++;
+    public int getValue() { // if -1, it's hidden (= "??")
+
+        if (!this.allCardsVisibles()) {
+            return -1;
         }
 
-        return hand_value;
+        int score = 0;
+        int nombre_as = 0;
+
+            for (Card card : this.hand) {
+                Character rank = card.getRank();
+
+                if (Character.isDigit(rank)) {
+                    int value = Character.getNumericValue(rank);
+                    score += value;
+                } else if (rank == 'T' || rank == 'J' || rank == 'Q' || rank == 'K') {
+                    score += 10;
+                } else if (rank == 'A') {
+                    nombre_as++;
+                    score += 11;
+                }
+            }
+
+            while (score > 21 && nombre_as > 0) {
+                score -= 10;
+                nombre_as--;
+            }
+
+            return score;
     }
 
     public Card reveal(int index) {
@@ -60,6 +83,13 @@ public class Hand {
                 str += " ??";
             }
 
+            int value = this.getValue();
+
+            if (value == -1) {
+                str += " ??";
+            } else {
+                str += " " + String.valueOf(value);
+            }
         }
         return str;
     }
