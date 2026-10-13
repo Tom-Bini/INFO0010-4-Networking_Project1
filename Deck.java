@@ -10,7 +10,6 @@ public class Deck {
     static int deck_size = accepted_ranks.size() * accepted_suits.size();
 
     private Deque<Card> deck = new ArrayDeque<>();
-    private Deque<Card> discard_pile = new ArrayDeque<>();
 
     public Deck() {
 
@@ -31,32 +30,23 @@ public class Deck {
     public boolean isFull() { return (this.deck.size() == deck_size); }
 
     public void shuffle() {
-        List<Card> temp = new ArrayList<Card>();
+        List<Card> temp = new ArrayList<Card>(deck);
 
         Collections.shuffle(temp);
 
         deck.clear();
 
-        for (Card element : temp) {
-            deck.push(element);
-        }
+        deck.addAll(temp);
     }
 
     public Card hit(Hand hand, Boolean status_card) {
         if (!deck.isEmpty()) {
             Card hit = deck.pop();
-            discard_pile.push(hit);
             hand.addCard(hit, status_card);
             return hit;
         } else {
             System.out.println("Stack is empty! Cannot pop.");
             return null;
-        }
-    }
-
-    public void discardToDeck() {
-        while(!discard_pile.isEmpty()) {
-            deck.push(discard_pile.pop());
         }
     }
 }
