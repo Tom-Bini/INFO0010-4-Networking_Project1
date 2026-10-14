@@ -1,5 +1,5 @@
 enum Result {
-    NATURAL_BLACKJACK,
+    BLACKJACK,
     WIN,
     PUSH,
     LOSE
