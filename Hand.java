@@ -11,13 +11,6 @@ public class Hand {
         status = new ArrayList<Boolean>();
     }
 
-    Hand(List<Card> cards) {
-        this.hand = cards;
-        for(int i = 0; i < hand.size(); i++) {
-            status.set(i, true);
-        }
-    }
-
     Hand(List<Card> cards, List<Boolean> status) {
         this.hand = cards;
         this.status = status;
@@ -37,12 +30,7 @@ public class Hand {
         return true;
     }
 
-    public int getValue() { // if -1, it's hidden (= "??")
-
-        if (!this.allCardsVisibles()) {
-            return -1;
-        }
-
+    public int getValueEvenIfHidden() {
         int score = 0;
         int nombre_as = 0;
 
@@ -68,6 +56,17 @@ public class Hand {
             return score;
     }
 
+    public int getValue() { // if -1, it's hidden (= "??")
+        if (!this.allCardsVisibles()) {
+            return -1;
+        }
+        return getValueEvenIfHidden();
+    }
+
+    public int getSize() {
+        return this.hand.size();
+    }
+
     public Card reveal(int index) {
         status.set(index, true);
         return hand.get(index);
@@ -83,15 +82,16 @@ public class Hand {
             } else {
                 str += " ??";
             }
-
-            int value = this.getValue();
-
-            if (value == -1) {
-                str += " ??";
-            } else {
-                str += " " + String.valueOf(value);
-            }
         }
+
+        int value = this.getValue();
+
+        if (value == -1) {
+            str += " ??";
+        } else {
+            str += " " + String.valueOf(value);
+        }
+
         return str;
     }
 }
