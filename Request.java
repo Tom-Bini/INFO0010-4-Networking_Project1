@@ -1,10 +1,15 @@
 public class Request {
     private Action action;
-    private int bet_amount;
+    private Integer bet_amount;
 
     Request(Action action, int bet_amount) {
         this.action = action;
         this.bet_amount = bet_amount;
+    }
+
+    Request(Action action) {
+        this.action = action;
+        this.bet_amount = null;
     }
 
     public Action getAction() {

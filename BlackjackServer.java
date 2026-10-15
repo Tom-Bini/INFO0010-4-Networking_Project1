@@ -18,7 +18,15 @@ public class BlackjackServer {
     }
     
     public static void main(String[] args) throws Exception {
-        
+        try {
+            // boucle lire / traiter / répondre
+        } catch (SocketTimeoutException e) {
+            // client trop silencieux
+        } catch (IOException e) {
+            // connexion cassée, client parti, etc.
+        } finally {
+            // fermer le socket quoi qu'il arrive
+        }
     }
 
 }

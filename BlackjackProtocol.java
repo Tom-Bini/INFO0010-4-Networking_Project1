@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.util.List;
+
 public class BlackjackProtocol {
 
     String current_msg;
@@ -6,10 +9,26 @@ public class BlackjackProtocol {
 
     }
 
-/* CLIENT'S METHODS */
+    public String readMessage(BufferedReader buff) {
+        
+    }
 
-    public Boolean send() {
-        return false;
+/* ENCODING REQUEST (CLIENT SIDE) */
+
+    public String encodeRequest(Request request) {
+        switch (request.getAction()) {
+            case BET:
+                return bet(request.getBetAmount());
+            case HIT:
+                return hit();
+            case STAND:
+                return stand();
+            case BANK:
+                return bank();
+            case QUIT:
+                return quit();
+        }
+        throw new IllegalStateException("Valeur d'enum non gérée : " + request.getAction());
     }
 
     public String bet(int amount) {
@@ -37,7 +56,50 @@ public class BlackjackProtocol {
         return msg;
     }
 
-/* SERVER'S METHODS */
+    /* DECODING REQUEST (SERVER SIDE) */
+
+    public Request decodeRequest(String request_str) throws ProtocolException {
+        switch (request_str) {
+            case "HIT":
+                return new Request(Action.HIT);
+            case "STAND":
+                return new Request(Action.STAND);
+            case "BANK":
+                return new Request(Action.BANK);
+            case "QUIT":
+                return new Request(Action.QUIT);
+    
+            default:
+                String[] words = request_str.split(" ", -1);
+                if (words[0].equals("BET")) {
+
+                    if (words.length != 2 || !words[1].matches("[1-9]\\d*")) {
+
+                        throw new ProtocolException("INVALID BET");
+
+                    } else {
+
+                        int bet;
+                        try {
+                            bet = Integer.parseInt(words[1]);
+                        } catch (NumberFormatException e) {
+                            throw new ProtocolException("INSUFFICIENT FUNDS");
+                        }
+
+                        return new Request(Action.BET, bet);
+                    }
+
+                } else {
+                    throw new ProtocolException("WRONG");
+                }
+        }
+    }
+
+/* ENCODING RESPONSE (SERVER SIDE) */
+
+    public String encodeResponse(Response response) {
+
+    }
 
     public String playerHand(Hand hand) {
         String msg = "PLAYER" + hand.toString() + "\r\n";
@@ -54,7 +116,7 @@ public class BlackjackProtocol {
         String msg;
         switch (result) {
 
-                case NATURAL_BLACKJACK:
+                case BLACKJACK:
                     msg = "BLACKJACK " + bet * 3 / 2;
                     break;
 
@@ -100,4 +162,9 @@ public class BlackjackProtocol {
         return "WRONG";
     }
 
+    /* DECODING RESPONSE (CLIENT SIDE) */
+
+    public Response decodeResponse(String response_str) {
+        
+    }
 }

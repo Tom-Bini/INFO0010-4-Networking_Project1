@@ -23,14 +23,10 @@ public class GameSession {
 
     public Response bet(int size) {
 
-        Response response;
-        
         if (size > bank) {
-            response = Response.error("INSUFFICIENT FUNDS");
-            return response;
+            return Response.error("INSUFFICIENT FUNDS");
         } else if (is_in_round == true) {
-            response = Response.error("ROUND IN PROGRESS");
-            return response;
+            return Response.error("ROUND IN PROGRESS");
         } else {
             this.is_in_round = true;
             current_bet = size;
@@ -58,29 +54,27 @@ public class GameSession {
 
                 return endRound(Result.LOSE);
                 
+            } else if (deck.isEmpty() == true){
+
+                return stand();
+
             } else {
+                
                 return Response.hands(player_hand.toString(), dealer_hand.toString());
+            
             }
         }
     }
 
     public Response hit() {
 
-        Response response;
-
-        if (deck.getSize() == 0) {
-            response = Response.error("");
-        } else if (is_in_round == false) {
-
-            response = Response.error("NO ACTIVE ROUND");
-            return response;
-
+        if (is_in_round == false) {
+            return Response.error("NO ACTIVE ROUND");
         }
 
         deck.hit(player_hand, true);
 
         int player_hand_value = player_hand.getValue();
-
 
         if (player_hand_value > 21) {
 
@@ -94,21 +88,7 @@ public class GameSession {
 
         if (deck.getSize() == 0) {
 
-            int dealer_hand_value = dealer_hand.getValueEvenIfHidden();
-
-            if (player_hand_value > dealer_hand_value) {
-
-                return endRound(Result.WIN);
-
-            } else if (player_hand_value < dealer_hand_value) {
-
-                return endRound(Result.LOSE);
-
-            } else {
-
-                return endRound(Result.PUSH);
-
-            }
+            return stand();
 
         }
 
@@ -123,20 +103,22 @@ public class GameSession {
         dealer_hand.reveal(1);
 
         while (dealer_hand.getValue() <= 16) {
+            
+            if (deck.isEmpty() == true) {
+
+                return resolveBothUnder21();
+
+            }
 
             deck.hit(dealer_hand, true);
-            
+
             if (dealer_hand.getValue() > 21) {
 
                 return endRound(Result.WIN);
 
-            } else if (deck.getSize() == 0) {
-
-                return resolveBothUnder21(true);
-
             }
         }
-            return resolveBothUnder21(false);
+            return resolveBothUnder21();
 
     }
 
@@ -145,7 +127,7 @@ public class GameSession {
     }
 
 
-    private Response resolveBothUnder21(boolean game_over) {
+    private Response resolveBothUnder21() {
         int player_hand_value = player_hand.getValueEvenIfHidden();
         int dealer_hand_value = dealer_hand.getValueEvenIfHidden();
         
@@ -174,12 +156,12 @@ public class GameSession {
 
             case BLACKJACK:
                 amount = current_bet * 3 / 2;
-                bank += current_bet * 5 / 2;
+                bank += current_bet + amount;
                 break;
 
             case WIN:
                 amount = current_bet;
-                bank += 2 * current_bet;
+                bank += current_bet + amount;
                 break;
 
             case PUSH:
