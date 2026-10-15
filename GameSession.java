@@ -19,6 +19,14 @@ public class GameSession {
         this.is_in_round = false;
     }
 
+    GameSession(Deck deck) { // utile pour tester
+        this.deck = deck;
+        this.bank = 100;
+        this.player_hand = new Hand();
+        this.dealer_hand = new Hand();
+        this.is_in_round = false;
+    }
+
     //METHODS THAT VERIFY THAT THE ACTION IS POSSIBLE IN CURRENT STATE, MODIFY THE STATE AND RETURN WITHOUT DISPLAYING ANYTHING
 
     public Response bet(int size) {
