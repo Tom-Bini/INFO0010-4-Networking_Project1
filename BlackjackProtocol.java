@@ -169,7 +169,99 @@ public class BlackjackProtocol {
 
     /* DECODING RESPONSE (CLIENT SIDE) */
 
-    public List<String> decodeResponse(String response_str) throws ProtocolException {
-        throw new UnsupportedOperationException();
+    public Response decodeResponse(List<String> lines) throws ProtocolException {
+        String player = null;
+        String dealer = null;
+        Result result = null;
+        Integer amount = null;
+        boolean game_over = false;
+        Integer bank = null;
+        String error = null;
+
+        if (lines == null || lines.isEmpty()) {
+            throw new ProtocolException("EMPTY MSG");
+        }
+
+        for (String line : lines) {
+            String[] words = line.split(" ", -1);
+            switch (words[0]) {
+                case "PLAYER":
+                    player = line.substring("PLAYER ".length());
+                    continue;
+                case "DEALER":
+                    dealer = line.substring("DEALER ".length());
+                    continue;
+                case "BLACKJACK":
+                    result = Result.BLACKJACK;
+                    amount = Integer.valueOf(line.substring("BLACKJACK ".length()));
+                    continue;
+                case "WIN":
+                    result = Result.WIN;
+                    amount = Integer.valueOf(line.substring("WIN ".length()));
+                    continue;
+                case "PUSH":
+                    result = Result.PUSH;
+                    amount = Integer.valueOf(line.substring("PUSH ".length()));
+                    continue;
+                case "LOSE":
+                    result = Result.LOSE;
+                    amount = Integer.valueOf(line.substring("LOSE ".length()));
+                    continue;
+                case "GAME":
+                    if (words[1].equals("OVER")) {
+                        game_over = true;
+                    }
+                    continue;
+                case "BANKROLL":
+                    bank = Integer.valueOf(line.substring("BANKROLL ".length()));
+                    continue;
+            
+                default:
+                    break;
+            }
+            switch (line) {
+                case "INVALID BET":
+                    error = "INVALID BET";
+                    continue;
+                case "INSUFFICIENT FUNDS":
+                    error = "INSUFFICIENT FUNDS";
+                    continue;
+                case "ROUND IN PROGRESS":
+                    error = "ROUND IN PROGRESS";
+                    continue;
+                case "NO ACTIVE ROUND":
+                    error = "NO ACTIVE ROUND";
+                    continue;
+                case "WRONG":
+                    error = "WRONG";
+                    continue;
+            
+                default:
+                    throw new ProtocolException("UNKNOWN LINE");
+            }
+        }
+
+        if (error != null && player == null && dealer == null && result == null && amount == null && game_over == false && bank == null) {
+
+            return Response.error(error);
+
+        } else if (bank != null && player == null && dealer == null && result == null && amount == null && game_over == false && error == null) {
+
+            return Response.bankroll(bank);
+
+        } else if (player != null && dealer != null && result == null && amount == null && !game_over && bank == null && error == null) {
+
+            return Response.hands(player, dealer);
+
+        } else if (player != null && dealer != null && result != null) {
+
+            return Response.endRound(player, dealer, result, amount, bank, game_over);
+
+        } else {
+
+            throw new ProtocolException("LINES COMBINATION INADEQUATE");
+
+        }
+
     }
 }
