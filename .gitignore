@@ -1,2 +1,4 @@
 .java-version
 todo.md
+*.class
+GameSessionTest.java

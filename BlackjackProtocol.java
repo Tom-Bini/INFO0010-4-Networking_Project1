@@ -1,65 +1,76 @@
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
+import java.util.ArrayList;
 
 public class BlackjackProtocol {
-
-    String current_msg;
 
     BlackjackProtocol() {
 
     }
 
-    public String readMessage(BufferedReader buff) {
-        
+    public List<String> readMessage(BufferedReader in) throws IOException {
+        List<String> msg_lines = new ArrayList<String>();
+        int number_lines = 0;
+        while(true) {
+            if (number_lines > 9) {
+                throw new IOException("Too much lines in message (>9)");
+            }
+            String line = in.readLine();
+            if (line == null) {
+                return msg_lines;
+            } else {
+                msg_lines.add(line);
+            }
+            number_lines ++;
+        }
     }
 
-/* ENCODING REQUEST (CLIENT SIDE) */
+    public void writeMessage(OutputStream out, List<String> lines) throws IOException {
+        String msg = "";
 
-    public String encodeRequest(Request request) {
+        for (String line : lines) {
+            msg += line + "\r\n";
+        }
+
+        msg += "\r\n";
+        out.write(msg.getBytes("US-ASCII"));
+        out.flush();
+
+        return;
+    }
+
+    /* ENCODING REQUEST (CLIENT SIDE) */
+
+    public List<String> encodeRequest(Request request) {
+        List<String> msg = new ArrayList<String>();
         switch (request.getAction()) {
             case BET:
-                return bet(request.getBetAmount());
+                msg.add("BET " + request.getBetAmount());
             case HIT:
-                return hit();
+                msg.add("HIT");
             case STAND:
-                return stand();
+                msg.add("STAND");
             case BANK:
-                return bank();
+                msg.add("BANK");
             case QUIT:
-                return quit();
+                msg.add("QUIT");
         }
-        throw new IllegalStateException("Valeur d'enum non gérée : " + request.getAction());
-    }
-
-    public String bet(int amount) {
-        String msg = "BET " + amount + "\r\n\r\n";
-        return msg;
-    }
-
-    public String hit() {
-        String msg = "HIT\r\n\r\n";
-        return msg;
-    }
-
-    public String stand() {
-        String msg = "STAND\r\n\r\n";
-        return msg;
-    }
-
-    public String bank() {
-        String msg = "BANK\r\n\r\n";
-        return msg;
-    }
-
-    public String quit() {
-        String msg = "QUIT\r\n\r\n";
         return msg;
     }
 
     /* DECODING REQUEST (SERVER SIDE) */
 
-    public Request decodeRequest(String request_str) throws ProtocolException {
-        switch (request_str) {
+    public Request decodeRequest(List<String> lines) throws ProtocolException {
+        if (lines.size() != 1) {
+            throw new ProtocolException("WRONG");
+        }
+        return decodeRequestLine(lines.get(0));
+    }
+
+    public Request decodeRequestLine(String line) throws ProtocolException{
+        switch (line) {
             case "HIT":
                 return new Request(Action.HIT);
             case "STAND":
@@ -70,7 +81,7 @@ public class BlackjackProtocol {
                 return new Request(Action.QUIT);
     
             default:
-                String[] words = request_str.split(" ", -1);
+                String[] words = line.split(" ", -1);
                 if (words[0].equals("BET")) {
 
                     if (words.length != 2 || !words[1].matches("[1-9]\\d*")) {
@@ -97,74 +108,80 @@ public class BlackjackProtocol {
 
 /* ENCODING RESPONSE (SERVER SIDE) */
 
-    public String encodeResponse(Response response) {
+    public List<String> encodeResponse(Response response) {
 
-    }
+        List<String> msg = new ArrayList<String>();
 
-    public String playerHand(Hand hand) {
-        String msg = "PLAYER" + hand.toString() + "\r\n";
+        if (response.getError() != null) {
+            msg.add(response.getError());
+            return msg;
+        }
+
+        if (response.getPlayerHand() != null) {
+            msg.add(response.getPlayerHand());
+        }
+
+        if (response.getResult() != null) {
+            msg.add(response.getResult().toString());
+        }
+
+        if (response.isGameOver() == true) {
+            msg.add("GAME OVER");
+        }
+
+        if (response.getBankroll() != null) {
+            msg.add("BANKROLL " + response.getBankroll());
+        }
 
         return msg;
     }
 
-    public String dealerHand(Hand hand) {
-        String msg = "DEALER" + hand.toString() + "\r\n";
-        return msg;
+    private String statusLine(Result result, int amount) {
+        String line;
+        switch (result) {
+            case BLACKJACK:
+                return "BLACKJACK " + amount;
+            
+            case WIN:
+                return "WIN " + amount;
+
+            case PUSH:
+                return "PUSH " + amount;
+
+            case LOSE:
+                return "LOSE " + amount;
+        }
     }
 
-    public String roundStatus(Result result, int bet) {
+    public String roundResult(Result result, int amount) {
         String msg;
         switch (result) {
 
                 case BLACKJACK:
-                    msg = "BLACKJACK " + bet * 3 / 2;
+                    msg = "BLACKJACK ";
                     break;
 
                 case WIN:
-                    msg = "WIN " + bet;
+                    msg = "WIN ";
                     break;
 
                 case PUSH:
-                    msg = "PUSH 0";
+                    msg = "PUSH ";
                     break;
 
                 case LOSE:
-                    msg = "LOSE " + bet;
+                    msg = "LOSE ";
                     break;
 
                 default:
                     return "";
             }
-        return msg;
-    }
-
-    public String gameOver(int bank) {
-        return "GAME OVER\r\nBANKROLL " + String.valueOf(bank) + "\r\n\r\n";
-    }
-
-    public String notANumber() {
-        return "INVALID BET";
-    }
-
-    public String betExceedsBank() {
-        return "INSUFFICIENT FUNDS";
-    }
-
-    public String roundInProgress() {
-        return "ROUND IN PROGRESS";
-    }
-
-    public String noActiveRound() {
-        return "NO ACTIVE ROUND";
-    }
-
-    public String wrong() {
-        return "WRONG";
+        return msg + amount   ;
     }
 
     /* DECODING RESPONSE (CLIENT SIDE) */
 
-    public Response decodeResponse(String response_str) {
-        
+    public Response decodeResponse(String response_str) throws Exception {
+        throw new UnsupportedOperationException();
     }
 }

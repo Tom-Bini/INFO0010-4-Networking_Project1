@@ -23,6 +23,15 @@ public class Deck {
         }
     }
 
+    public Deck(List<Card> cards) { // utile pour tester
+
+    for (Card card : cards) {
+        
+        deck.addLast(card);
+
+    }
+}
+
     public int getSize() { return this.deck.size(); }
 
     public boolean isEmpty() { return this.deck.isEmpty(); }

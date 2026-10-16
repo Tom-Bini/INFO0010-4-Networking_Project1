@@ -30,7 +30,7 @@ public class Response {
         return response;
     }
 
-    public static Response endRound(String player_hand, String dealer_hand, Result result, int amount, int bankroll, Boolean game_over) {
+    public static Response endRound(String player_hand, String dealer_hand, Result result, int amount, Integer bankroll, Boolean game_over) {
         Response response = new Response();
         response.player_hand = player_hand;
         response.dealer_hand = dealer_hand;

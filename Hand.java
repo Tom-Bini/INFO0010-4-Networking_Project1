@@ -77,10 +77,15 @@ public class Hand {
         String str = "";
         for(int i = 0; i < hand.size(); i++) {
 
+            if(i > 0) {
+                    str += " ";
+                }
+
             if (status.get(i) == true) {
-                str += " " + hand.get(i).toString();
+                str += hand.get(i).toString();
             } else {
-                str += " ??";
+                str += "??";
+                return str;
             }
         }
 

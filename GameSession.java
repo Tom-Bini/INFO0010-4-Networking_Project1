@@ -184,7 +184,11 @@ public class GameSession {
         }
 
         boolean game_over = bank == 0 || deck.getSize() < 4;
-        response = Response.endRound(player_hand.toString(), dealer_hand.toString(), result, amount, bank, game_over);
+        Integer bank_send = null;
+        if (game_over == true) {
+            bank_send = bank;
+        }
+        response = Response.endRound(player_hand.toString(), dealer_hand.toString(), result, amount, bank_send, game_over);
         is_in_round = false;
 
         return response;
