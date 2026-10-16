@@ -19,6 +19,11 @@ public class BlackjackProtocol {
             }
             String line = in.readLine();
             if (line == null) {
+                return null;
+            } else if (line.isEmpty()) {
+                if (number_lines == 0) {
+                    msg_lines.add("");
+                }
                 return msg_lines;
             } else {
                 msg_lines.add(line);
@@ -48,14 +53,19 @@ public class BlackjackProtocol {
         switch (request.getAction()) {
             case BET:
                 msg.add("BET " + request.getBetAmount());
+                break;
             case HIT:
                 msg.add("HIT");
+                break;
             case STAND:
                 msg.add("STAND");
+                break;
             case BANK:
                 msg.add("BANK");
+                break;
             case QUIT:
                 msg.add("QUIT");
+                break;
         }
         return msg;
     }
@@ -118,11 +128,15 @@ public class BlackjackProtocol {
         }
 
         if (response.getPlayerHand() != null) {
-            msg.add(response.getPlayerHand());
+            msg.add("PLAYER " + response.getPlayerHand());
+        }
+
+        if (response.getDealerHand() != null) {
+            msg.add("DEALER " + response.getDealerHand());
         }
 
         if (response.getResult() != null) {
-            msg.add(response.getResult().toString());
+            msg.add(statusLine(response.getResult(), response.getAmount()));
         }
 
         if (response.isGameOver() == true) {
@@ -137,7 +151,6 @@ public class BlackjackProtocol {
     }
 
     private String statusLine(Result result, int amount) {
-        String line;
         switch (result) {
             case BLACKJACK:
                 return "BLACKJACK " + amount;
@@ -151,37 +164,12 @@ public class BlackjackProtocol {
             case LOSE:
                 return "LOSE " + amount;
         }
-    }
-
-    public String roundResult(Result result, int amount) {
-        String msg;
-        switch (result) {
-
-                case BLACKJACK:
-                    msg = "BLACKJACK ";
-                    break;
-
-                case WIN:
-                    msg = "WIN ";
-                    break;
-
-                case PUSH:
-                    msg = "PUSH ";
-                    break;
-
-                case LOSE:
-                    msg = "LOSE ";
-                    break;
-
-                default:
-                    return "";
-            }
-        return msg + amount   ;
+        return null;
     }
 
     /* DECODING RESPONSE (CLIENT SIDE) */
 
-    public Response decodeResponse(String response_str) throws Exception {
+    public List<String> decodeResponse(String response_str) throws ProtocolException {
         throw new UnsupportedOperationException();
     }
 }
