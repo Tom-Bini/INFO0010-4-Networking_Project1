@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ClientHandler implements Runnable{
@@ -8,10 +7,10 @@ public class ClientHandler implements Runnable{
     private BlackjackProtocol protocol;
     private GameSession session;
 
-    public ClientHandler(Socket socket, BlackjackProtocol protocol, GameSession session) {
+    public ClientHandler(Socket socket) {
         this.socket = socket;
-        this.protocol = protocol;
-        this.session = session;
+        this.protocol = new BlackjackProtocol();
+        this.session = new GameSession();
     }
 
     public void run() {
@@ -37,9 +36,12 @@ public class ClientHandler implements Runnable{
 
                     response = handle(request);
 
+                    protocol.writeMessage(out, protocol.encodeResponse(response));
+
                     if (response.isGameOver() == true) {
                         break;
                     }
+
 
                 } catch (ProtocolException e) {
 
@@ -48,15 +50,20 @@ public class ClientHandler implements Runnable{
 
                 }
 
-
             }
 
         } catch (SocketTimeoutException e) {
-            //log and exit
+            System.out.println(System.err + e.getMessage());
+        } catch (IOException e) {
+            System.out.println(System.err + e.getMessage());
         } catch (RuntimeException e) {
-            
+            System.out.println(System.err + e.getMessage());
         } finally {
-            //close socket in try catch
+            try {
+                socket.close();
+            } catch (IOException e) {
+                // TODO: handle exception
+            }
         }
     }
 
@@ -66,15 +73,18 @@ public class ClientHandler implements Runnable{
         switch (request.getAction()) {
             case BET:
                 response = session.bet(request.getBetAmount());
+                break;
             case HIT:
                 response = session.hit();
+                break;
             case STAND:
                 response = session.stand();
+                break;
             case BANK:
                 response = session.bank();
-            default:
-                response = session.bank(); // n'est jamais appelé
                 break;
+            default:
+                return null;
         }
         return response;
     }
