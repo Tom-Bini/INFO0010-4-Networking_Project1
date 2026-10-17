@@ -210,6 +210,8 @@ public class BlackjackProtocol {
                     case "GAME":
                         if (line.equals("GAME OVER")) {
                             game_over = true;
+                        } else {
+                            throw new ProtocolException("UNKNOWN LINE");
                         }
                         continue;
                     case "BANKROLL":

@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class BlackjackClient {
 
@@ -12,8 +13,10 @@ public class BlackjackClient {
     private boolean in_round;
 
 
-    BlackjackClient() throws Exception {
+    BlackjackClient() throws IOException {
+        this.protocol = new BlackjackProtocol();
         this.socket = new Socket("127.0.0.1", 2027);
+        this.ui = new TerminalUserInterface();
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "US-ASCII"));
         this.out = socket.getOutputStream();
         this.in_round = false;
@@ -41,13 +44,18 @@ public class BlackjackClient {
     private void display(Response response) {
         if (response.getError() != null) {
             ui.showServerError(response.getError());
-        } else if (response.getResult() != null) {
-            ui.showRoundResult(response.getResult(), response.getAmount());
-        } else if (response.getPlayerHand() != null && response.getDealerHand() != null) {
+            return;
+        }
+        if (response.getPlayerHand() != null && response.getDealerHand() != null) {
             ui.showCards(response.getPlayerHand(), response.getDealerHand());
-        } else if (response.isGameOver() == true) {
+        }
+        if (response.getResult() != null) {
+            ui.showRoundResult(response.getResult(), response.getAmount());
+        }
+        if (response.isGameOver() == true) {
             ui.showGameOver(response.getBankroll());
-        } else if (response.getBankroll() != null) {
+        }
+        if (response.getBankroll() != null && response.isGameOver() == false) {
             ui.showBankValue(response.getBankroll());
         }
     }
@@ -57,20 +65,24 @@ public class BlackjackClient {
     }
     
     public static void main(String[] args) throws Exception {
-        BlackjackClient bjc = new BlackjackClient();
-        UserInterface ui = new TerminalUserInterface();
+        BlackjackClient bjc = null;
         try {
+
+            bjc = new BlackjackClient();
+
             while(true) {
+
                 Action action;
                 if (bjc.isInRound() == false) {
-                    action = ui.showActionsBetweenRounds();
+                    action = bjc.ui.showActionsBetweenRounds();
                 } else {
-                    action = ui.showActionsDuringRound();
+                    action = bjc.ui.showActionsDuringRound();
                 }
+
                 Request request;
 
                 if (action == Action.BET) {
-                    request = new Request(action, ui.askBetSize());
+                    request = new Request(action, bjc.ui.askBetSize());
                 } else {
                     request = new Request(action);
                 }
@@ -78,7 +90,7 @@ public class BlackjackClient {
                 Response response = bjc.send(request);
 
                 if (action == Action.QUIT) {
-                    ui.showGoodbyeMessage();
+                    bjc.ui.showGoodbyeMessage();
                     break;
                 }
 
@@ -90,9 +102,9 @@ public class BlackjackClient {
                     bjc.in_round = false;
                 }
 
-                if (response.getError() == "NO ACTIVE ROUND") {
+                if ("NO ACTIVE ROUND".equals(response.getError())) {
                     bjc.in_round = false;
-                } else if (response.getError() == "ROUND IN PROGRESS") {
+                } else if ("ROUND IN PROGRESS".equals(response.getError())) {
                     bjc.in_round = true;
                 }
 
@@ -102,12 +114,18 @@ public class BlackjackClient {
 
                 
             }
+        } catch (ConnectException e) {
+            System.out.println("Connexion au serveur impossible");
         } catch (ProtocolException e) {
             System.out.println("Réponse invalide du serveur");
         } catch (IOException e) {
             System.out.println("Connexion perdue");
+        } catch (NoSuchElementException e) {
+            System.out.println("Entrée fermée, arrêt du client.");
         } finally {
-            bjc.socket.close();
+            if (bjc != null) {
+                bjc.socket.close();
+            }
         }
     }
 }

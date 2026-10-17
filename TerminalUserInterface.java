@@ -10,8 +10,8 @@ public class TerminalUserInterface implements UserInterface{
 
     @Override 
     public void showCards(String player_cards, String dealer_cards) {
-        System.out.println(player_cards);
-        System.out.println(dealer_cards);
+        System.out.println("Your cards : " + player_cards);
+        System.out.println("Dealer : " + dealer_cards);
     }
 
     @Override 
@@ -40,12 +40,12 @@ public class TerminalUserInterface implements UserInterface{
             try {
                 int number = Integer.parseInt(input);
                 if (number != 1 && number != 2 && number != 3) {
-                    return number;
+                    continue;
                 } else {
-                    return readIntBetweenRounds(scanner, "Wrong input, retry : ");
+                    return number;
                 }
             } catch (NumberFormatException e) {
-                return readIntBetweenRounds(scanner, "Wrong input, retry : ");
+                continue;
             }
         }
     }
@@ -83,12 +83,12 @@ public class TerminalUserInterface implements UserInterface{
             try {
                 int number = Integer.parseInt(input);
                 if (number != 1 && number != 2 && number != 3 && number != 4) {
-                    return number;
+                    continue;
                 } else {
-                    return readIntDuringRounds(scanner, "Wrong input, retry : ");
+                    return number;
                 }
             } catch (NumberFormatException e) {
-                return readIntDuringRounds(scanner, "Wrong input, retry : ");
+                continue;
             }
         }
     }
@@ -100,6 +100,9 @@ public class TerminalUserInterface implements UserInterface{
             String input = scanner.nextLine().trim();
             try {
                 int number = Integer.parseInt(input);
+                if(number <= 0) {
+                    continue;
+                }
                 return number;
             } catch (NumberFormatException e) {
                 continue;
@@ -117,17 +120,17 @@ public class TerminalUserInterface implements UserInterface{
     public void showRoundResult(Result result, int amount) {
         switch (result) {
             case WIN:
-                System.out.println("You Won " + amount + "chips !");
+                System.out.println("You Won " + amount + " chips !");
                 break;
             case LOSE:
-                System.out.println("You Lost " + amount + "chips !");
+                System.out.println("You Lost " + amount + " chips !");
                 break;
             case PUSH:
                 System.out.println("It's a push !");
                 break;
             case BLACKJACK:
                 System.out.println("BLACKJACK !!!");
-                System.out.println("You Won " + amount + "chips !");
+                System.out.println("You Won " + amount + " chips !");
                 break;
         
             default:
