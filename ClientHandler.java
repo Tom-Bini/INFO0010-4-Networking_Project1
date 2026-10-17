@@ -53,11 +53,11 @@ public class ClientHandler implements Runnable{
             }
 
         } catch (SocketTimeoutException e) {
-            System.out.println(System.err + e.getMessage());
+            System.err.println("SocketTimeoutException : " + e.getMessage());
         } catch (IOException e) {
-            System.out.println(System.err + e.getMessage());
+            System.err.println("IOException : " + e.getMessage());
         } catch (RuntimeException e) {
-            System.out.println(System.err + e.getMessage());
+            System.err.println("RuntimeException : " + e.getMessage());
         } finally {
             try {
                 socket.close();

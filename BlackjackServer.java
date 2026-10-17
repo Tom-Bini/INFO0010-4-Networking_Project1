@@ -10,10 +10,8 @@ public class BlackjackServer {
                 Socket s = server_socket.accept();
                 new Thread(new ClientHandler(s)).start();
             } catch (IOException e) {
-                // connexion cassée, client parti, etc.
+                System.err.println("IOException : " + e.getMessage());
                 continue;
-            } finally {
-                server_socket.close();
             }
         }
     }
