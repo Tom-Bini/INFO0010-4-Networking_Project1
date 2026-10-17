@@ -9,13 +9,9 @@ public class TerminalUserInterface implements UserInterface{
     }
 
     @Override 
-    public void showCards(Hand player_cards, Hand dealer_cards) {
-        String str_player_cards = player_cards.toString();
-        String str_dealer_cards = dealer_cards.toString();
-        System.out.println("Your cards :" + str_player_cards);
-        System.out.println("Your score :" + player_cards.getValue());
-        System.out.println("Dealer's cards :" + str_dealer_cards);
-        System.out.println("Dealer's score :" + dealer_cards.getValue());
+    public void showCards(String player_cards, String dealer_cards) {
+        System.out.println(player_cards);
+        System.out.println(dealer_cards);
     }
 
     @Override 
@@ -25,8 +21,7 @@ public class TerminalUserInterface implements UserInterface{
             System.out.println("2 : BANK");
             System.out.println("3 : QUIT");
             System.out.println("===============");
-            System.out.println("Choose an action by typing the corresponding number : ");
-            int actionChosen = scanner.nextInt();
+            int actionChosen = readIntBetweenRounds(scanner, "Choose an action by typing the corresponding number : ");
             
             switch (actionChosen) {
                 case 1: return Action.BET;
@@ -34,6 +29,23 @@ public class TerminalUserInterface implements UserInterface{
                 case 3: return Action.QUIT;
                 default: System.out.println("Invalid number, try again.");
                     break;
+            }
+        }
+    }
+
+    private int readIntBetweenRounds(Scanner scanner, String question) {
+        while (true) {
+            System.out.print(question);
+            String input = scanner.nextLine().trim();
+            try {
+                int number = Integer.parseInt(input);
+                if (number != 1 && number != 2 && number != 3) {
+                    continue;
+                } else {
+                    return readIntBetweenRounds(scanner, "Wrong input, retry : ");
+                }
+            } catch (NumberFormatException e) {
+                return readIntBetweenRounds(scanner, "Wrong input, retry : ");
             }
         }
     }
@@ -51,8 +63,7 @@ public class TerminalUserInterface implements UserInterface{
             System.out.println("3 : BANK");
             System.out.println("4 : QUIT");
             System.out.println("===============");
-            System.out.println("Choose an action by typing the corresponding number : ");
-            int actionChosen = scanner.nextInt();
+            int actionChosen = readIntDuringRounds(scanner, "Choose an action by typing the corresponding number : ");
             
             switch (actionChosen) {
                 case 1: return Action.HIT;
@@ -65,33 +76,68 @@ public class TerminalUserInterface implements UserInterface{
         }
     }
 
+    private int readIntDuringRounds(Scanner scanner, String question) {
+        while (true) {
+            System.out.print(question);
+            String input = scanner.nextLine().trim();
+            try {
+                int number = Integer.parseInt(input);
+                if (number != 1 && number != 2 && number != 3 && number != 4) {
+                    continue;
+                } else {
+                    return readIntDuringRounds(scanner, "Wrong input, retry : ");
+                }
+            } catch (NumberFormatException e) {
+                return readIntDuringRounds(scanner, "Wrong input, retry : ");
+            }
+        }
+    }
+
     @Override 
     public int askBetSize() {
-        System.out.println("How many chips do you want to bet ?");
-        return scanner.nextInt();
+        while(true) {
+            System.out.println("How many chips do you want to bet ?");
+            String input = scanner.nextLine().trim();
+            try {
+                int number = Integer.parseInt(input);
+                return number;
+            } catch (NumberFormatException e) {
+                continue;
+            }
+        }
+    }
+
+
+    @Override 
+    public void showServerError(String error) {
+        System.out.println(error);
     }
 
     @Override 
-    public void showErrorMsg() {
-        System.out.println("Value not accepted, try again.");
+    public void showRoundResult(Result result, int amount) {
+        switch (result) {
+            case WIN:
+                System.out.println("You Won " + amount + "chips !");
+                break;
+            case LOSE:
+                System.out.println("You Lost " + amount + "chips !");
+                break;
+            case PUSH:
+                System.out.println("It's a push !");
+                break;
+            case BLACKJACK:
+                System.out.println("BLACKJACK !!!");
+                System.out.println("You Won " + amount + "chips !");
+                break;
+        
+            default:
+                break;
+        }
     }
 
     @Override
-    public void showGameResultWin(int earnings, int new_bank_value) {
-        System.out.println("You Won " + earnings + "chips !");
-        System.out.println("Your updated bank value : " + new_bank_value);
-    }
-
-    @Override
-    public void showGameResultTie(int earnings, int new_bank_value) {
-        System.out.println("It's a push !");
-        System.out.println("Your bank value didn't change : " + new_bank_value);
-    }
-
-    @Override
-    public void showGameResultLose(int bet, int new_bank_value) {
-        System.out.println("You Lost " + bet + "chips !");
-        System.out.println("Your updated bank value : " + new_bank_value);
+    public void showGameOver(int final_bankroll) {
+        System.out.println("Session terminée avec " + Integer.valueOf(final_bankroll) + " chips !");
     }
 
     @Override 
