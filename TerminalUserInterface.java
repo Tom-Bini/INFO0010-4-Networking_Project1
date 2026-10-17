@@ -40,7 +40,7 @@ public class TerminalUserInterface implements UserInterface{
             try {
                 int number = Integer.parseInt(input);
                 if (number != 1 && number != 2 && number != 3) {
-                    continue;
+                    return number;
                 } else {
                     return readIntBetweenRounds(scanner, "Wrong input, retry : ");
                 }
@@ -83,7 +83,7 @@ public class TerminalUserInterface implements UserInterface{
             try {
                 int number = Integer.parseInt(input);
                 if (number != 1 && number != 2 && number != 3 && number != 4) {
-                    continue;
+                    return number;
                 } else {
                     return readIntDuringRounds(scanner, "Wrong input, retry : ");
                 }
