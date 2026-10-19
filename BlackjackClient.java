@@ -16,7 +16,7 @@ public class BlackjackClient {
     BlackjackClient() throws IOException {
         this.protocol = new BlackjackProtocol();
         this.socket = new Socket("127.0.0.1", 2027);
-        this.ui = new TerminalUserInterface();
+        this.ui = new GraphicalUserInterface();
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "US-ASCII"));
         this.out = socket.getOutputStream();
         this.in_round = false;
